@@ -1,5 +1,4 @@
-export default {
-    goias: [
+export default [
         {
           "id": 1,
           "nome": "Abadia de Goiás",
@@ -1477,4 +1476,3 @@ export default {
           "longitude": -48.8886111111
         }
       ]
-}
