@@ -8,10 +8,7 @@ const GeneticAlgorithmConstructor = function(config){
 
             let population = initialPopulation(config.values, config.populationSize)
             
-            
-            console.log(population.length)
-
-
+        
         }
     }
 
@@ -31,18 +28,31 @@ const yourCompetitionFunction = function(){}
 
 const initialPopulation = function(population, size){
 
+
+    const suffleArray = function(array){
+    
+        for(let i = 0; i < array.length; i++){
+    
+          const j = Math.floor(Math.random() * i)
+          const temp = array[i]
+          array[i] = array[j]
+          array[j] = temp
+        }
+    
+        return array
+    }
+
     let pupulation = []
 
     for (let index = 0; index < size; index++) {
     
-        let genome = population
+        let genome = suffleArray([...population])
 
         pupulation.push(genome)
         
     }
 
     return pupulation
-
 
 }
 
