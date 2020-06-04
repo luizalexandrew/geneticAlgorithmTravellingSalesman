@@ -28,15 +28,29 @@ const GeneticAlgorithmConstructor = function(config){
 
 }
 
+const breakFunction = function(bestFitness, interations, breakInterations, breakScore){
+
+    if(bestFitness >= breakScore)
+        return true
+
+    if(interations >= breakInterations)
+        return true
+
+    return false
+    
+}
+
 var config = {
     mutationFunction: aMutationFunctionYouSupply,
     crossoverFunction: yourCrossoverFunction,
     fitnessFunction: fitnessFunction,
     doesABeatBFunction: yourCompetitionFunction,
     initialPopulation: initialPopulation,
+    breakFunction: breakFunction,
     values: cidades,
     populationSize: 1000,
-    searchResult: 1000,
+    interations: 1000,
+    breakScore: 1000,
     mutationValue: 0.1
 }
 
@@ -79,7 +93,6 @@ const fitnessFunction = function(population){
     })
 
     return populationWithFitness
-
 
 }
 
