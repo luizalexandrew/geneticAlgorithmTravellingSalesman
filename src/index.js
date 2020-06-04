@@ -14,15 +14,16 @@ const GeneticAlgorithmConstructor = function(config){
                 crossoverFunction, 
                 fitnessFunction, 
                 doesABeatBFunction,
-                mutationValue
+                mutationValue,
+                getBestIndividual
             } = config
 
             let population = initialPopulation(values, populationSize)
 
             let populationWithFitness = fitnessFunction(population)
-            console.log(populationWithFitness)
+            let bestFitness = getBestIndividual(populationWithFitness)
             
-        
+            console.log('******', bestFitness)
         }
     }
 
@@ -40,25 +41,15 @@ const breakFunction = function(bestFitness, interations, breakInterations, break
     
 }
 
-var config = {
-    mutationFunction: aMutationFunctionYouSupply,
-    crossoverFunction: yourCrossoverFunction,
-    fitnessFunction: fitnessFunction,
-    doesABeatBFunction: yourCompetitionFunction,
-    initialPopulation: initialPopulation,
-    breakFunction: breakFunction,
-    values: cidades,
-    populationSize: 1000,
-    interations: 1000,
-    breakScore: 1000,
-    mutationValue: 0.1
+const getBestIndividualImplement = function(population){
+
+    let max = population.reduce(function(prev, current) {
+        return (prev.fitness < current.fitness) ? prev : current
+    })
+
+    return max.fitness
+
 }
-
-
-
-
-
-
 
 const aMutationFunctionYouSupply = function(){}
 
@@ -136,9 +127,12 @@ var config = {
     fitnessFunction: fitnessFunction,
     doesABeatBFunction: yourCompetitionFunction,
     initialPopulation: initialPopulation,
+    breakFunction: breakFunction,
+    getBestIndividual: getBestIndividualImplement,
     values: cidades,
     populationSize: 1000,
-    searchResult: 1000,
+    interations: 1000,
+    breakScore: 1000,
     mutationValue: 0.1
 }
 
