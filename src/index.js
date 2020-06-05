@@ -13,15 +13,36 @@ const GeneticAlgorithmConstructor = function(config){
                 searchResult,  
                 crossoverFunction, 
                 fitnessFunction, 
-                doesABeatBFunction,
+                selection,
                 mutationValue,
-                getBestIndividual
+                getBestIndividual,
+                interations,
+                breakScore
             } = config
 
             let population = initialPopulation(values, populationSize)
 
             let populationWithFitness = fitnessFunction(population)
             let bestFitness = getBestIndividual(populationWithFitness)
+            let genationNumber = 0
+
+            while(bestFitness < breakScore || genationNumber <= interations){
+
+
+
+
+                let myselection = selection(population)
+
+                console.log(myselection.length)
+
+
+                genationNumber++
+
+
+
+
+            }
+
             
             console.log('******', bestFitness)
         }
@@ -44,7 +65,7 @@ const breakFunction = function(bestFitness, interations, breakInterations, break
 const getBestIndividualImplement = function(population){
 
     let max = population.reduce(function(prev, current) {
-        return (prev.fitness < current.fitness) ? prev : current
+        return (prev.fitness > current.fitness) ? prev : current
     })
 
     return max.fitness
@@ -77,9 +98,11 @@ const fitnessFunction = function(population){
         return fitness
     }
 
+    const base = 100000000;
+
     let populationWithFitness = population.map(individual=>{
         let fitness = calculateFitness(individual.genome)
-        individual.fitness = fitness
+        individual.fitness = base / fitness
         return individual
     })
 
@@ -88,7 +111,22 @@ const fitnessFunction = function(population){
 }
 
 
-const yourCompetitionFunction = function(){}
+const yourCompetitionFunction = function(population, percent=25){
+
+    population.sort(function(a, b) {
+        var keyA = a.fitness,
+          keyB = b.fitness;
+
+        if (keyA > keyB) return -1;
+        if (keyA < keyB) return 1;
+        return 0;
+    });
+
+    let cut = population.length*percent/100
+
+    return population.slice(0, cut)
+
+}
 
 
 const initialPopulation = function(population, size){
@@ -125,7 +163,7 @@ var config = {
     mutationFunction: aMutationFunctionYouSupply,
     crossoverFunction: yourCrossoverFunction,
     fitnessFunction: fitnessFunction,
-    doesABeatBFunction: yourCompetitionFunction,
+    selection: yourCompetitionFunction,
     initialPopulation: initialPopulation,
     breakFunction: breakFunction,
     getBestIndividual: getBestIndividualImplement,
