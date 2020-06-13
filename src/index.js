@@ -26,12 +26,25 @@ const GeneticAlgorithmConstructor = function(config){
             let bestFitness = getBestIndividual(populationWithFitness)
             let genationNumber = 0
 
+            console.log(populationWithFitness)
+
+            // console.log('Geração X melhor Fitness', bestFitness)
+
             while(bestFitness < breakScore || genationNumber <= interations){
 
-
-
-
                 let myselection = selection(population)
+
+                let populationWithCrossOver = crossoverFunction(myselection, populationSize)
+
+                // console.log(populationWithCrossOver)
+
+                // let populationWithFitness = fitnessFunction(populationWithCrossOver)
+                // let bestFitness = getBestIndividual(populationWithFitness)
+
+                // console.log('Geração X melhor Fitness', getBestIndividual(bestFitness))
+
+                break
+
 
                 console.log(myselection.length)
 
@@ -75,7 +88,81 @@ const getBestIndividualImplement = function(population){
 const aMutationFunctionYouSupply = function(){}
 
 
-const yourCrossoverFunction = function(){}
+const yourCrossoverFunction = function(population, size){
+
+    function getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+    }
+
+    function OX(parent1, parent2) {
+
+        const length = parent1.length
+
+        let r1 = getRndInteger(0, length)
+        let r2 = getRndInteger(0, length)
+    
+        if(r1 >= r2){
+            let temp = r1
+            r1 = r2
+            r2 = temp
+        }
+
+        let newGenome = []
+
+        for (let index = r1; index < r2; index++) {
+            newGenome[index] = parent1[index]; 
+        }
+
+        let elementNotPresent = []
+        let j = 0
+
+        for (let index = 0; index < length; index++) {
+
+            if(!newGenome.includes(parent2[index])){
+                elementNotPresent[j] = parent2[index]
+                j++
+            }
+
+        }
+
+        let elementNotPresentIndex = 0
+
+        for (let index = 0; index < length; index++) {
+
+
+            if(!newGenome[index]){
+                newGenome[index] = elementNotPresent[elementNotPresentIndex]
+                elementNotPresentIndex++
+
+            }
+          
+        }
+
+        return [...newGenome]
+
+    }
+
+    let populationSize = population.length
+
+    while(population.length < size){
+
+        let parent1 = getRndInteger(0, populationSize)
+        let parent2 = getRndInteger(0, populationSize)
+
+        let child = {
+            genome: [],
+            fitness: undefined
+        }
+        
+        
+        child.genome = OX(population[parent1].genome, population[parent2].genome)
+
+        population.push(child)
+
+    }
+    
+    return population
+}
 
 
 const fitnessFunction = function(population){
