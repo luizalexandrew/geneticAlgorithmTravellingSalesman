@@ -35,15 +35,15 @@ const GeneticAlgorithmConstructor = function(config){
 
                 let myselection = selection(population)
 
-                let populationWithCrossOver = crossoverFunction(myselection, populationSize)
+                let populationWithCrossOver = crossoverFunction(myselection, populationSize, mutationFunction, mutationValue)
+                
                 let populationWithFitness = fitnessFunction(populationWithCrossOver)
-
                 population = populationWithFitness
                 let bestFitnessResponse = getBestIndividual(population)
                 bestFitness = bestFitnessResponse.bestFitness
                 bestIndividual = bestFitnessResponse.bestIndividual
 
-                console.log(`Best Finess ${genationNumber} Generation`, bestFitness)
+                console.log(`Best Finess ${genationNumber} Generation`, calculateFitness(bestIndividual.genome))
 
               
 
@@ -103,14 +103,40 @@ const getBestIndividualImplement = function(population){
 
 }
 
-const aMutationFunctionYouSupply = function(){}
+const aMutationFunctionYouSupply = function(individual, mutationValue){
+
+    // console.log(individual)
+
+    let value = getRndFloat(0, 100)
 
 
-const yourCrossoverFunction = function(population, size){
+    if(value < mutationValue){
+        
 
-    function getRndInteger(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) ) + min;
+        let r1 = getRndInteger(0, individual.length - 1)
+        let r2 = getRndInteger(0, individual.length - 1)
+
+        if(r1 !== r2){
+
+        
+            let temp = individual[r1]
+            individual[r1] = individual[r2]
+            individual[r2] = temp
+
+        }
+
+        
+
     }
+
+    return individual
+
+}
+
+
+const yourCrossoverFunction = function(population, size, mutationFunction, mutationValue){
+
+    
 
     function OX(parent1, parent2) {
 
@@ -156,7 +182,7 @@ const yourCrossoverFunction = function(population, size){
           
         }
 
-        return [...newGenome]
+        return mutationFunction([...newGenome], mutationValue)
 
     }
 
@@ -198,6 +224,14 @@ function calculateFitness(cidades){
 
     fitness += calculateDistance(cidades[length], cidades[0])
     return fitness
+}
+
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
+function getRndFloat(min, max) {
+    return Math.random() * (max - min + 1) + min;
 }
 
 const fitnessFunction = function(population){
@@ -275,9 +309,9 @@ var config = {
     getBestIndividual: getBestIndividualImplement,
     values: cidades,
     populationSize: 1000,
-    interations: 150,
+    interations: 25000,
     breakScore: 1000,
-    mutationValue: 0.1
+    mutationValue: 5
 }
 
 
