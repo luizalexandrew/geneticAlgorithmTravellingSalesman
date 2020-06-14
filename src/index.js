@@ -23,10 +23,11 @@ const GeneticAlgorithmConstructor = function(config){
             let population = initialPopulation(values, populationSize)
 
             let populationWithFitness = fitnessFunction(population)
-            let bestFitness = getBestIndividual(populationWithFitness)
+            let {bestFitness, bestIndividual} = getBestIndividual(populationWithFitness)
             let genationNumber = 0
 
-            console.log(populationWithFitness)
+            console.log(`Best Finess Initial Generation`, bestFitness)
+            
 
             // console.log('Geração X melhor Fitness', bestFitness)
 
@@ -35,21 +36,23 @@ const GeneticAlgorithmConstructor = function(config){
                 let myselection = selection(population)
 
                 let populationWithCrossOver = crossoverFunction(myselection, populationSize)
+                let populationWithFitness = fitnessFunction(populationWithCrossOver)
 
-                // console.log(populationWithCrossOver)
+                population = populationWithFitness
+                let bestFitnessResponse = getBestIndividual(population)
+                bestFitness = bestFitnessResponse.bestFitness
+                bestIndividual = bestFitnessResponse.bestIndividual
 
-                // let populationWithFitness = fitnessFunction(populationWithCrossOver)
-                // let bestFitness = getBestIndividual(populationWithFitness)
+                console.log(`Best Finess ${genationNumber} Generation`, bestFitness)
 
-                // console.log('Geração X melhor Fitness', getBestIndividual(bestFitness))
-
-                break
-
-
-                console.log(myselection.length)
-
+              
 
                 genationNumber++
+
+
+
+
+
 
 
 
@@ -58,6 +61,8 @@ const GeneticAlgorithmConstructor = function(config){
 
             
             console.log('******', bestFitness)
+            console.log('Response: ', calculateFitness(bestIndividual.genome))
+
         }
     }
 
@@ -77,11 +82,24 @@ const breakFunction = function(bestFitness, interations, breakInterations, break
 
 const getBestIndividualImplement = function(population){
 
+    let best = population[0]
+
     let max = population.reduce(function(prev, current) {
-        return (prev.fitness > current.fitness) ? prev : current
+
+        if(prev.fitness > current.fitness){
+            best = prev
+            return prev
+        }else{
+            return current
+        }
+
+
     })
 
-    return max.fitness
+    return {
+        bestFitness: max.fitness,
+        bestIndividual: best
+    }
 
 }
 
@@ -142,7 +160,7 @@ const yourCrossoverFunction = function(population, size){
 
     }
 
-    let populationSize = population.length
+    let populationSize = population[0].genome.length
 
     while(population.length < size){
 
@@ -154,36 +172,37 @@ const yourCrossoverFunction = function(population, size){
             fitness: undefined
         }
         
-        
         child.genome = OX(population[parent1].genome, population[parent2].genome)
 
-        population.push(child)
+        population.push(child)       
+       
 
     }
     
     return population
 }
 
+function calculateDistance(cidadeOrigem, cidadeDestino){
+    return 6371 * Math.acos(Math.cos(Math.PI*(90-cidadeDestino.latitude)/180)*Math.cos((90-cidadeOrigem.latitude)*Math.PI/180)+Math.sin((90-cidadeDestino.latitude)*Math.PI/180)*Math.sin((90-cidadeOrigem.latitude)*Math.PI/180)*Math.cos((cidadeOrigem.longitude-cidadeDestino.longitude)*Math.PI/180))
+}
+
+function calculateFitness(cidades){
+    let length = cidades.length - 1;
+    let fitness = 0;
+
+    for (let index = 0; index < length; index++) {
+        
+        fitness += calculateDistance(cidades[index], cidades[index+1])
+
+    }
+
+    fitness += calculateDistance(cidades[length], cidades[0])
+    return fitness
+}
 
 const fitnessFunction = function(population){
 
-    function calculateDistance(cidadeOrigem, cidadeDestino){
-        return 6371 * Math.acos(Math.cos(Math.PI*(90-cidadeDestino.latitude)/180)*Math.cos((90-cidadeOrigem.latitude)*Math.PI/180)+Math.sin((90-cidadeDestino.latitude)*Math.PI/180)*Math.sin((90-cidadeOrigem.latitude)*Math.PI/180)*Math.cos((cidadeOrigem.longitude-cidadeDestino.longitude)*Math.PI/180))
-    }
-
-    function calculateFitness(cidades){
-        let length = cidades.length - 1;
-        let fitness = 0;
-
-        for (let index = 0; index < length; index++) {
-            
-            fitness += calculateDistance(cidades[index], cidades[index+1])
-
-        }
-
-        fitness += calculateDistance(cidades[length], cidades[0])
-        return fitness
-    }
+    
 
     const base = 100000000;
 
@@ -256,7 +275,7 @@ var config = {
     getBestIndividual: getBestIndividualImplement,
     values: cidades,
     populationSize: 1000,
-    interations: 1000,
+    interations: 150,
     breakScore: 1000,
     mutationValue: 0.1
 }
